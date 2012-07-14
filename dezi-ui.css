@@ -1,0 +1,9 @@
+body {
+    margin: 1em;
+    font-family: verdana,arial,helvetica,'sans-serif';
+}
+
+.result {
+    padding: 1em;
+    border-bottom: 1px solid #eee;
+}
