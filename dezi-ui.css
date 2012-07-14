@@ -7,3 +7,60 @@ body {
     padding: 1em;
     border-bottom: 1px solid #eee;
 }
+
+#results {
+    float:left;
+    display:inline;
+    width: 70%;
+    margin: 0 1 0 0;
+}
+
+#facets {
+    float:left;
+    display:inline;
+    width: 25%;
+    margin: 0 0 0 1;
+    border: 1px solid #eee;
+    min-height: 80%;
+}
+
+#stats {
+    margin: 1em;
+    font-size: 80%;
+}
+
+#progress {
+    text-align: center;
+    margin-top: 3em;
+}
+
+#pager {
+    float:right;
+}
+/*
+#pager_o_left {
+    width:22px; height:15px;
+    float:left;
+    margin:4px 4px 0 0;
+}
+#pager_o_right {
+    width:22px; height:15px;
+    float:left;
+    margin:4px 0 0 4px;
+}
+*/
+/*
+#pager_m_left {
+    cursor:pointer;
+    width:22px; height:15px;
+    margin:4px 2px 0 0;
+}
+#pager_m_right {
+    cursor:pointer;
+    width:22px; height:15px;
+    margin:4px 0 0 2px;
+}
+*/
+
+#pager_slider {
+}
