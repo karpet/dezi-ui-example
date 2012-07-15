@@ -8,6 +8,10 @@ body {
     border-bottom: 1px solid #eee;
 }
 
+b.h {
+    background-color:yellow;
+}
+
 #results {
     float:left;
     display:inline;
@@ -34,9 +38,24 @@ body {
     margin-top: 3em;
 }
 
+#tools {
+}
+
 #pager {
     float:right;
+    padding: 1em;
+    font-size: 90%;
 }
+
+.paginator_p {
+    background-color: #ddd;
+}
+
+.paginator_p.selected {
+    background-color: #aaa;
+}
+
+
 /*
 #pager_o_left {
     width:22px; height:15px;
@@ -63,4 +82,5 @@ body {
 */
 
 #pager_slider {
+    
 }

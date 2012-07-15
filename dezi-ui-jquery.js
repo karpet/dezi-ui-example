@@ -42,7 +42,11 @@ function dezi_search(offset) {
         if (!resp.results.length) {
             resDiv.innerHTML = 'No results';
         }
-        var $stats = $('<div id="stats">'+resp.total+' results | Search time: '+resp.search_time+' | Build time: '+resp.build_time+'</div>');
+        var start  = parseInt(resp.offset)+1;
+        var end    = parseInt(resp.offset)+parseInt(+resp.page_size);
+        if (end > resp.total) end = resp.total;
+        var $stats = $('<div id="stats">'+start+' - '+end+' of '+resp.total+' results ' +
+                       '| Search time: '+resp.search_time+' | Build time: '+resp.build_time+'</div>');
         $('#stats').replaceWith($stats);
         dezi_pager(resp);
     });
@@ -90,8 +94,11 @@ function dezi_pager(resp) {
     }
     var this_page = (resp.offset / resp.page_size) + 1;
     $("#pager").jPaginator({
-        nbPages: parseInt(resp.total / resp.page_size),
+        nbPages: parseInt(resp.total / resp.page_size)+1,
+        nbVisible: 10,
         selectedPage: this_page,
+        withSlider: true,
+        minSlidesForSlider: 2,
         overBtnLeft:'#pager_o_left',
         overBtnRight:'#pager_o_right',
         maxBtnLeft:'#pager_m_left',
@@ -110,6 +117,7 @@ $(document).ready(function() {
     loadjscssfile('http://dezi.org/ui/example/jquery-ui-1.8.13.slider.min.js', 'js');
     loadjscssfile('http://dezi.org/ui/example/jPaginator.js', 'js');
     loadjscssfile('http://dezi.org/ui/example/jPaginator.css', 'css');
+    loadjscssfile('http://dezi.org/ui/example/dezi-ui.css', 'css');
 
     // if we were called with ?q= then initiate query
     var params = $.deparam.querystring();
