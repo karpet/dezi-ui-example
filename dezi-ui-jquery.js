@@ -1,5 +1,5 @@
 /* jQuery Dezi::UI example */
-// based on http://nuggets.comperiosearch.com/2011/03/asynchronous-search-results-jquery-solr-json-ajax/
+// Inspired by http://nuggets.comperiosearch.com/2011/03/asynchronous-search-results-jquery-solr-json-ajax/
 
 
 // dynamic file loading from http://www.javascriptkit.com/javatutors/loadjavascriptcss.shtml
@@ -54,9 +54,46 @@ function dezi_search(offset) {
 
 }
 
+function dezi_append_query(q) {
+    Dezi.QUERY.push(q);
+    dezi_write_query_string();
+}
+
+function dezi_remove_query(q) {
+    var newq = [];
+    for (var i=0; i<Dezi.QUERY.length; i++) {
+        if (Dezi.QUERY[i] == q) {
+            continue;
+        }
+        newq.push(Dezi.QUERY[i]);
+    }
+    Dezi.QUERY = newq;
+    dezi_write_query_string();
+}
+
+function dezi_write_query_string() {
+    var qbox = $('#q')[0];
+    qbox.value = Dezi.QUERY.join(' AND ');
+}
+
+function dezi_facet_click (cbox) {
+    var $checkbox = $(cbox)[0];
+    var clause = $(cbox).next()[0].innerHTML;
+    var fieldname = $(cbox).attr('class');
+    if ($checkbox.checked) {
+        //console.log("checked!");
+        // append facet value to query
+        dezi_append_query(fieldname+'=("'+clause+'")');
+    }
+    else {
+        dezi_remove_query(fieldname+'=("'+clause+'")');
+    }
+}
+
 function dezi_facets(uri) {
     var facetsDiv = $('#facets').get(0);
     facetsDiv.innerHTML = '<div id="fprogress">...Building...<br/><img src="http://dezi.org/ui/example/Progress.gif"/></div>';
+    var MAX_FACETS = 5;
 
     $.getJSON(uri+'&f=1&r=0', function (resp) {
         facetsDiv.innerHTML = '';
@@ -65,10 +102,35 @@ function dezi_facets(uri) {
             facetsDiv.innerHTML = 'No facets';
             return;
         }
-        for (var facet_name in resp.facets) {
+        var facet_names = [];
+        for (var fn in resp.facets) {
+            facet_names.push(fn);
+        }
+        facet_names = facet_names.sort(function(a,b) {
+            if (a < b) return -1; // sort alphabetically
+            if (b < a) return 1;
+            return 0;
+        });
+        for (var i=0; i < facet_names.length; i++) {
+            var facet_name = facet_names[i];
             var facet = resp.facets[facet_name];
             var f = facet_name + ' (' + facet.length + ')';
+            var list = $('<ul></ul>');
+            var ordered_facets = facet.sort(function(a,b) {
+                if (a.count > b.count) return -1;
+                if (a.count < b.count) return 1;
+                return 0;
+            });
+            for (var j=0; j < ordered_facets.length; j++) {
+                var fitem = facet[j];
+                var checkable = $('<li class="facet"><input class="'+facet_name+'" onclick="dezi_facet_click(this)" type="checkbox" /> <span>'+fitem.term+'</span> ('+fitem.count+')</li>');
+                list.append(checkable[0]);
+                if (j >= MAX_FACETS) {
+                    break;
+                }
+            }
             var $d = $('<div class="facet">' + f + '</div>');
+            $d.append(list);
             $('#facets').append($d);
         }
     });
@@ -122,13 +184,16 @@ $(document).ready(function() {
     // if we were called with ?q= then initiate query
     var params = $.deparam.querystring();
     //console.log(params);
+    Dezi = {}; // global var
+    Dezi.QUERY = [];
     var query = "";
     if (params && params.q) {
         query = params.q.replace(/&/g, '&amp;').replace(/>/g, '&gt;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
+        Dezi.QUERY.push(query);
     }
 
     // generate page structure
-    var $page = $('<div id="tools"><input size="30" type="text" id="q" value="'+query+'"></input>' +
+    var $page = $('<div id="tools"><input size="80" type="text" id="q" value="'+query+'"></input>' +
                    '<button onclick="dezi_search()">Search</button></div>' +
                   '<div id="stats"></div>' +
                   '<div id="results"></div><div id="facets"></div>');
