@@ -228,7 +228,8 @@ $(document).ready(function() {
     // enter key listener
     $("#q").keyup( function(e) {
         if(e.keyCode == 13) {
-            Dezi.search();
+            Dezi.QUERY = [];
+            Dezi.append_query($('#q')[0].value);
         }
     });
 
