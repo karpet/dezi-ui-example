@@ -27,12 +27,14 @@ Dezi.search = function(offset) {
    if (!offset) offset = 0;
    var query = $('#q').get(0).value;
    if (!query || !query.length) {
-    return;
+       console.log("no query");
+       return;
    }
 
    var resDiv = $('#results').get(0);
    resDiv.innerHTML = '<div id="progress">...Searching...<br/><img src="http://dezi.org/ui/example/Progress.gif"/></div>'; 
-   var uri = DEZI_SEARCH_URI + "?t=JSON&q="+query+'&o='+offset;   
+   var uri = DEZI_SEARCH_URI + "?t=JSON&q="+encodeURIComponent(query)+'&o='+offset;   
+   console.log(uri);
    $.getJSON(uri+'&f=0', function (resp) {
         resDiv.innerHTML = '';
         //console.log(resp);
@@ -74,6 +76,14 @@ Dezi.remove_query = function(q) {
     Dezi.set_query();
 }
 
+Dezi.get_query_hash = function() {
+    var hash = {};
+    for (var i=0; i<Dezi.QUERY.length; i++) {
+        hash[Dezi.QUERY[i]] = true;
+    }
+    return hash;
+}
+
 Dezi.set_query = function() {
     var qbox = $('#q')[0];
     qbox.value = Dezi.QUERY.join(' AND ');
@@ -84,7 +94,7 @@ Dezi.set_query = function() {
 
 Dezi.facet_click = function(cbox) {
     var $checkbox = $(cbox)[0];
-    var clause = $(cbox).next()[0].innerHTML;
+    var clause = $(cbox).next().attr('data-facet');
     var fieldname = $(cbox).attr('class');
     if ($checkbox.checked) {
         //console.log("checked!");
@@ -101,9 +111,11 @@ Dezi.facets = function(uri) {
     facetsDiv.innerHTML = '<div id="fprogress">...Building...<br/><img src="http://dezi.org/ui/example/Progress.gif"/></div>';
     var MAX_FACETS = 5;
 
+    //console.log("facets uri=", uri+'&f=1&r=0');
+
     $.getJSON(uri+'&f=1&r=0', function (resp) {
         facetsDiv.innerHTML = '';
-        console.log(resp);
+        //console.log(resp);
         if (!resp.facets) {
             facetsDiv.innerHTML = 'No facets';
             return;
@@ -117,6 +129,7 @@ Dezi.facets = function(uri) {
             if (b < a) return 1;
             return 0;
         });
+        var qhash = Dezi.get_query_hash();
         for (var i=0; i < facet_names.length; i++) {
             var facet_name = facet_names[i];
             var facet = resp.facets[facet_name];
@@ -129,7 +142,13 @@ Dezi.facets = function(uri) {
             });
             for (var j=0; j < ordered_facets.length; j++) {
                 var fitem = facet[j];
-                var checkable = $('<li class="facet"><input class="'+facet_name+'" onclick="Dezi.facet_click(this)" type="checkbox" /> <span>'+fitem.term+'</span> ('+fitem.count+')</li>');
+                var fq = facet_name+'=("'+fitem.term+'")';
+                //console.log(fq);
+                var checked = qhash[fq];
+                var label = fitem.label ? fitem.label : fitem.term;
+                var checkable = $('<li class="facet"><input class="'+facet_name+'" onclick="Dezi.facet_click(this)" type="checkbox" '+
+                                (checked?'checked="true"':'')+
+                                '/> <span data-facet="'+fitem.term+'">'+label+'</span> ('+fitem.count+')</li>');
                 list.append(checkable[0]);
                 if (j >= MAX_FACETS) {
                     break;
@@ -173,7 +192,10 @@ Dezi.pager = function(resp) {
         maxBtnRight:'#pager_m_right',
         onPageClicked: function(a,num) {
             var new_offset = resp.page_size * (num - 1);
-            Dezi.search(new_offset);
+            var st = $.bbq.getState();
+            st['o'] = new_offset;
+            $.bbq.pushState(st);
+            //Dezi.search(new_offset);
         }
     });
      
@@ -203,10 +225,6 @@ $(document).ready(function() {
                   '<div id="results"></div><div id="facets"></div>');
     $('body').append($page);
 
-    if (query.length) {
-        //Dezi.search();  // q present, start search
-    }
-
     // enter key listener
     $("#q").keyup( function(e) {
         if(e.keyCode == 13) {
@@ -218,10 +236,16 @@ $(document).ready(function() {
     $(window).bind( 'hashchange', function(e) {
         //console.log(e.fragment);
         var existing_frag = $.deparam.fragment();
-        console.log(existing_frag);
+        //console.log(existing_frag);
         if (existing_frag['q'] && existing_frag['q'].length) {
             $('#q')[0].value = decodeURIComponent(existing_frag['q']).replace(/\+/g, ' ');
-            Dezi.search();
+            Dezi.QUERY = $('#q')[0].value.split(/ AND /);
+            Dezi.search(existing_frag['o']);
+        }
+        else if (query) {
+            Dezi.QUERY = [query];
+            $('#q')[0].value = query;
+            Dezi.search(existing_frag['o']);
         }
 
     });
