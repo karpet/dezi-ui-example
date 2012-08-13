@@ -1,9 +1,12 @@
 /* jQuery Dezi::UI example */
 // Inspired by http://nuggets.comperiosearch.com/2011/03/asynchronous-search-results-jquery-solr-json-ajax/
 
+// our namespace
+Dezi = {};
+Dezi.QUERY = [];
 
 // dynamic file loading from http://www.javascriptkit.com/javatutors/loadjavascriptcss.shtml
-function loadjscssfile(filename, filetype){
+Dezi.load_file = function (filename, filetype){
  if (filetype=="js"){ //if filename is a external JavaScript file
   var fileref=document.createElement('script')
   fileref.setAttribute("type","text/javascript")
@@ -20,13 +23,13 @@ function loadjscssfile(filename, filetype){
 }
 
 
-function dezi_search(offset) {
+Dezi.search = function(offset) {
    if (!offset) offset = 0;
    var query = $('#q').get(0).value;
    if (!query || !query.length) {
     return;
    }
-   
+
    var resDiv = $('#results').get(0);
    resDiv.innerHTML = '<div id="progress">...Searching...<br/><img src="http://dezi.org/ui/example/Progress.gif"/></div>'; 
    var uri = DEZI_SEARCH_URI + "?t=JSON&q="+query+'&o='+offset;   
@@ -48,18 +51,18 @@ function dezi_search(offset) {
         var $stats = $('<div id="stats">'+start+' - '+end+' of '+resp.total+' results ' +
                        '| Search time: '+resp.search_time+' | Build time: '+resp.build_time+'</div>');
         $('#stats').replaceWith($stats);
-        dezi_pager(resp);
+        Dezi.pager(resp);
     });
-    dezi_facets(uri);
+    Dezi.facets(uri);
 
 }
 
-function dezi_append_query(q) {
+Dezi.append_query = function(q) {
     Dezi.QUERY.push(q);
-    dezi_write_query_string();
+    Dezi.set_query();
 }
 
-function dezi_remove_query(q) {
+Dezi.remove_query = function(q) {
     var newq = [];
     for (var i=0; i<Dezi.QUERY.length; i++) {
         if (Dezi.QUERY[i] == q) {
@@ -68,29 +71,32 @@ function dezi_remove_query(q) {
         newq.push(Dezi.QUERY[i]);
     }
     Dezi.QUERY = newq;
-    dezi_write_query_string();
+    Dezi.set_query();
 }
 
-function dezi_write_query_string() {
+Dezi.set_query = function() {
     var qbox = $('#q')[0];
     qbox.value = Dezi.QUERY.join(' AND ');
+    var st = $.bbq.getState();
+    st['q'] = Dezi.QUERY.join(' AND ');
+    $.bbq.pushState(st);
 }
 
-function dezi_facet_click (cbox) {
+Dezi.facet_click = function(cbox) {
     var $checkbox = $(cbox)[0];
     var clause = $(cbox).next()[0].innerHTML;
     var fieldname = $(cbox).attr('class');
     if ($checkbox.checked) {
         //console.log("checked!");
         // append facet value to query
-        dezi_append_query(fieldname+'=("'+clause+'")');
+        Dezi.append_query(fieldname+'=("'+clause+'")');
     }
     else {
-        dezi_remove_query(fieldname+'=("'+clause+'")');
+        Dezi.remove_query(fieldname+'=("'+clause+'")');
     }
 }
 
-function dezi_facets(uri) {
+Dezi.facets = function(uri) {
     var facetsDiv = $('#facets').get(0);
     facetsDiv.innerHTML = '<div id="fprogress">...Building...<br/><img src="http://dezi.org/ui/example/Progress.gif"/></div>';
     var MAX_FACETS = 5;
@@ -123,7 +129,7 @@ function dezi_facets(uri) {
             });
             for (var j=0; j < ordered_facets.length; j++) {
                 var fitem = facet[j];
-                var checkable = $('<li class="facet"><input class="'+facet_name+'" onclick="dezi_facet_click(this)" type="checkbox" /> <span>'+fitem.term+'</span> ('+fitem.count+')</li>');
+                var checkable = $('<li class="facet"><input class="'+facet_name+'" onclick="Dezi.facet_click(this)" type="checkbox" /> <span>'+fitem.term+'</span> ('+fitem.count+')</li>');
                 list.append(checkable[0]);
                 if (j >= MAX_FACETS) {
                     break;
@@ -136,7 +142,7 @@ function dezi_facets(uri) {
     });
 }
 
-function dezi_pager(resp) {
+Dezi.pager = function(resp) {
     var pager_html = $('<div id="pager">' +
       '<a id="pager_m_left"></a><div id="pager_o_left"></div>' +
       '<div class="paginator_p_wrap">' +
@@ -167,7 +173,7 @@ function dezi_pager(resp) {
         maxBtnRight:'#pager_m_right',
         onPageClicked: function(a,num) {
             var new_offset = resp.page_size * (num - 1);
-            dezi_search(new_offset);
+            Dezi.search(new_offset);
         }
     });
      
@@ -176,16 +182,14 @@ function dezi_pager(resp) {
 // generate the page
 $(document).ready(function() {
     // load helper files
-    loadjscssfile('http://dezi.org/ui/example/jquery-ui-1.8.13.slider.min.js', 'js');
-    loadjscssfile('http://dezi.org/ui/example/jPaginator.js', 'js');
-    loadjscssfile('http://dezi.org/ui/example/jPaginator.css', 'css');
-    loadjscssfile('http://dezi.org/ui/example/dezi-ui.css', 'css');
+    Dezi.load_file('http://dezi.org/ui/example/jquery-ui-1.8.13.slider.min.js', 'js');
+    Dezi.load_file('http://dezi.org/ui/example/jPaginator.js', 'js');
+    Dezi.load_file('http://dezi.org/ui/example/jPaginator.css', 'css');
+    Dezi.load_file('http://dezi.org/ui/example/dezi-ui.css', 'css');
 
     // if we were called with ?q= then initiate query
     var params = $.deparam.querystring();
     //console.log(params);
-    Dezi = {}; // global var
-    Dezi.QUERY = [];
     var query = "";
     if (params && params.q) {
         query = params.q.replace(/&/g, '&amp;').replace(/>/g, '&gt;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
@@ -194,20 +198,36 @@ $(document).ready(function() {
 
     // generate page structure
     var $page = $('<div id="tools"><input size="80" type="text" id="q" value="'+query+'"></input>' +
-                   '<button onclick="dezi_search()">Search</button></div>' +
+                   '<button onclick="Dezi.search()">Search</button></div>' +
                   '<div id="stats"></div>' +
                   '<div id="results"></div><div id="facets"></div>');
     $('body').append($page);
 
     if (query.length) {
-        dezi_search();  // q present, start search
+        //Dezi.search();  // q present, start search
     }
 
     // enter key listener
     $("#q").keyup( function(e) {
         if(e.keyCode == 13) {
-            dezi_search();
+            Dezi.search();
         }
     });
+
+    // let the back button work since we load page via ajax
+    $(window).bind( 'hashchange', function(e) {
+        //console.log(e.fragment);
+        var existing_frag = $.deparam.fragment();
+        console.log(existing_frag);
+        if (existing_frag['q'] && existing_frag['q'].length) {
+            $('#q')[0].value = decodeURIComponent(existing_frag['q']).replace(/\+/g, ' ');
+            Dezi.search();
+        }
+
+    });
+
+    // fire the hashchange trigger on load
+    $(window).trigger( 'hashchange' );
+        
 });
 
