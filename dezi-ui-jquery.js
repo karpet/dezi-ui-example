@@ -1,4 +1,5 @@
 /* jQuery Dezi::UI example */
+/* Copyright 2012 Peter Karman karpet@dezi.org */
 // Inspired by http://nuggets.comperiosearch.com/2011/03/asynchronous-search-results-jquery-solr-json-ajax/
 
 // our namespace
@@ -219,7 +220,9 @@ $(document).ready(function() {
     }
 
     // generate page structure
-    var $page = $('<div id="tools"><input size="80" type="text" id="q" value="'+query+'"></input>' +
+    var $page = $('<div class="title"><a href="https://github.com/karpet/dezi-ui-example">Dezi::UI Example</a>'+
+                  ' - part of the <a href="http://dezi.org/">Dezi Search Platform</a></div>'+
+                  '<div id="tools"><input size="80" type="text" id="q" value="'+query+'"></input>' +
                    '<button onclick="Dezi.search()">Search</button></div>' +
                   '<div id="stats"></div>' +
                   '<div id="results"></div><div id="facets"></div>');

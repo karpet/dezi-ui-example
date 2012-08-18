@@ -3,6 +3,10 @@ body {
     font-family: verdana,arial,helvetica,'sans-serif';
 }
 
+.title {
+    padding-bottom: 1em;
+}
+
 .result {
     padding: 1em;
     border-bottom: 1px solid #eee;
