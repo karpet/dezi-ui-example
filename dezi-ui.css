@@ -12,6 +12,10 @@ body {
     border-bottom: 1px solid #eee;
 }
 
+.result:hover {
+    background-color: #eee;
+}
+
 b.h {
     background-color:yellow;
 }
@@ -28,6 +32,7 @@ b.h {
     display:inline;
     width: 25%;
     margin: 0 0 0 1;
+    padding: 4px;
     border: 1px solid #eee;
     min-height: 80%;
     font-size: 90%;
