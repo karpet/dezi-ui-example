@@ -47,7 +47,6 @@ b.h {
 }
 
 #pager {
-    float:right;
     padding: 1em;
     font-size: 90%;
 }
