@@ -41,14 +41,20 @@ Dezi.search = function(offset) {
         //console.log(resp);
         for (var i = 0; i < resp.results.length; i++) {
             var res = resp.results[i];
-            var uri;
+            var uri, title;
             if (res.uri.match(/^https?:/)) {
                 uri = res.uri;
             }
             else {
                 uri = DEZI_SEARCH_URI + "/" + res.uri;
             }
-            var r = "<b><a href='" + uri + "'>" + res.title + "</a></b><br/>" + res.summary;
+            if (res.title.length) {
+                title = res.title;
+            }
+            else {
+                title = '[no title]';
+            }
+            var r = "<b><a href='" + uri + "'>" + title + "</a></b><br/>" + res.summary;
             var $d = $('<div class="result">' + r + '</div>');
             $('#results').append($d);
         }  
