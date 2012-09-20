@@ -218,8 +218,8 @@ Dezi.pager = function(resp) {
 // generate the page
 $(document).ready(function() {
     // load helper files
-    Dezi.load_file('http://dezi.org/ui/example/jquery-ui-1.8.13.slider.min.js', 'js');
     Dezi.load_file('http://dezi.org/ui/example/jPaginator.js', 'js');
+    Dezi.load_file('http://dezi.org/ui/example/jquery-ui-1.8.13.slider.min.js', 'js');
     Dezi.load_file('http://dezi.org/ui/example/jPaginator.css', 'css');
     Dezi.load_file('http://dezi.org/ui/example/dezi-ui.css', 'css');
 
