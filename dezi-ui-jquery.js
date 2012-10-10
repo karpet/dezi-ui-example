@@ -28,14 +28,14 @@ Dezi.search = function(offset) {
    if (!offset) offset = 0;
    var query = $('#q').get(0).value;
    if (!query || !query.length) {
-       console.log("no query");
+       //console.log("no query");
        return;
    }
 
    var resDiv = $('#results').get(0);
    resDiv.innerHTML = '<div id="progress">...Searching...<br/><img src="http://dezi.org/ui/example/Progress.gif"/></div>'; 
    var uri = DEZI_SEARCH_URI + "?t=JSON&q="+encodeURIComponent(query)+'&o='+offset;   
-   console.log(uri);
+   //console.log(uri);
    $.getJSON(uri+'&f=0', function (resp) {
         resDiv.innerHTML = '';
         //console.log(resp);
