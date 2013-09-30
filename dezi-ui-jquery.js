@@ -194,8 +194,12 @@ Dezi.pager = function(resp) {
         $('#tools').append(pager_html);
     }
     var this_page = (resp.offset / resp.page_size) + 1;
+    var numPages = parseInt(resp.total / resp.page_size);
+    if (resp.total % resp.page-size) {
+        numPages++;
+    }
     $("#pager").jPaginator({
-        nbPages: parseInt(resp.total / resp.page_size)+1,
+        nbPages: numPages,
         nbVisible: 10,
         selectedPage: this_page,
         withSlider: true,
