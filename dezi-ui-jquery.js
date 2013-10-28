@@ -195,7 +195,7 @@ Dezi.pager = function(resp) {
     }
     var this_page = (resp.offset / resp.page_size) + 1;
     var numPages = parseInt(resp.total / resp.page_size);
-    if (resp.total % resp.page-size) {
+    if (resp.total % resp.page_size) {
         numPages++;
     }
     $("#pager").jPaginator({
