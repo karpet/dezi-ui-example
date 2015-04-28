@@ -33,7 +33,7 @@ Dezi.search = function(offset) {
    }
 
    var resDiv = $('#results').get(0);
-   resDiv.innerHTML = '<div id="progress">...Searching...<br/><img src="http://dezi.org/ui/example/Progress.gif"/></div>'; 
+   resDiv.innerHTML = '<div id="progress">...Searching...<br/><img src="//dezi.org/ui/example/Progress.gif"/></div>'; 
    var uri = DEZI_SEARCH_URI + "?t=JSON&q="+encodeURIComponent(query)+'&o='+offset;   
    //console.log(uri);
    $.getJSON(uri+'&f=0', function (resp) {
@@ -122,7 +122,7 @@ Dezi.facet_click = function(cbox) {
 
 Dezi.facets = function(uri) {
     var facetsDiv = $('#facets').get(0);
-    facetsDiv.innerHTML = '<div id="fprogress">...Building...<br/><img src="http://dezi.org/ui/example/Progress.gif"/></div>';
+    facetsDiv.innerHTML = '<div id="fprogress">...Building...<br/><img src="//dezi.org/ui/example/Progress.gif"/></div>';
     var MAX_FACETS = 5;
 
     //console.log("facets uri=", uri+'&f=1&r=0');
@@ -222,10 +222,10 @@ Dezi.pager = function(resp) {
 // generate the page
 $(document).ready(function() {
     // load helper files
-    Dezi.load_file('http://dezi.org/ui/example/jPaginator.js', 'js');
-    Dezi.load_file('http://dezi.org/ui/example/jquery-ui-1.8.13.slider.min.js', 'js');
-    Dezi.load_file('http://dezi.org/ui/example/jPaginator.css', 'css');
-    Dezi.load_file('http://dezi.org/ui/example/dezi-ui.css', 'css');
+    Dezi.load_file('//dezi.org/ui/example/jPaginator.js', 'js');
+    Dezi.load_file('//dezi.org/ui/example/jquery-ui-1.8.13.slider.min.js', 'js');
+    Dezi.load_file('//dezi.org/ui/example/jPaginator.css', 'css');
+    Dezi.load_file('//dezi.org/ui/example/dezi-ui.css', 'css');
 
     // if we were called with ?q= then initiate query
     var params = $.deparam.querystring();
@@ -238,7 +238,7 @@ $(document).ready(function() {
 
     // generate page structure
     var $page = $('<div class="title"><a href="https://github.com/karpet/dezi-ui-example">Dezi::UI Example</a>'+
-                  ' - part of the <a href="http://dezi.org/">Dezi Search Platform</a></div>'+
+                  ' - part of the <a href="//dezi.org/">Dezi Search Platform</a></div>'+
                   '<div id="tools"><input size="80" type="text" id="q" value="'+query+'"></input>' +
                    '<button onclick="Dezi.search()">Search</button></div>' +
                   '<div id="stats"></div>' +
